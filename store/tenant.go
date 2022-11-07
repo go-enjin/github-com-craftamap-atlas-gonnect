@@ -2,8 +2,13 @@ package store
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"time"
+
+	"gorm.io/datatypes"
+
+	"github.com/go-enjin/be/pkg/log"
 )
 
 type Tenant struct {
@@ -17,21 +22,24 @@ type Tenant struct {
 	AddonInstalled bool   `json:"-" gorm:"type:bool;NOT NULL"`
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
-	EventType      string `json:"eventType" gorm:"-"`
+	EventType      string         `json:"eventType" gorm:"-"`
+	Context        datatypes.JSON `json:"context" gorm:"default:'{}'"`
 }
 
 func NewTenantFromReader(r io.Reader) (*Tenant, error) {
-	//TODO: Check for clientKey, any tenant must have an clientKey
 	tenant := &Tenant{}
 	err := json.NewDecoder(r).Decode(tenant)
 	if err != nil {
 		return nil, err
+	}
+	if tenant.ClientKey == "" {
+		return nil, fmt.Errorf("tenant missing ClientKey")
 	}
 	if tenant.EventType == "installed" {
 		tenant.AddonInstalled = true
 	} else if tenant.EventType == "uninstalled" {
 		tenant.AddonInstalled = false
 	}
-	LOG.Debugf("Created new Tenant instance from reader; tenant: %+v\n", *tenant)
+	log.DebugF("Created new Tenant instance from reader; tenant: %+v\n", *tenant)
 	return tenant, nil
 }

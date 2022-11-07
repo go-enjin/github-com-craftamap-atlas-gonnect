@@ -7,11 +7,12 @@ import (
 	"path/filepath"
 	"time"
 
-	gonnect "github.com/craftamap/atlas-gonnect"
-	atlasjwt "github.com/craftamap/atlas-gonnect/atlas-jwt"
-	atlasoauth2 "github.com/craftamap/atlas-gonnect/atlas-oauth2"
-	"github.com/craftamap/atlas-gonnect/store"
-        "github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt"
+
+	"github.com/go-enjin/github-com-craftamap-atlas-gonnect"
+	atlasjwt "github.com/go-enjin/github-com-craftamap-atlas-gonnect/atlas-jwt"
+	atlasoauth2 "github.com/go-enjin/github-com-craftamap-atlas-gonnect/atlas-oauth2"
+	"github.com/go-enjin/github-com-craftamap-atlas-gonnect/store"
 )
 
 type HostRequest struct {
@@ -77,11 +78,10 @@ func (h HostRequest) AsAddon(req *http.Request) (*http.Request, error) {
 		return nil, err
 	}
 
-	h.modifyRequest(req)
+	_, _ = h.modifyRequest(req)
 
 	req.Header.Set("Authorization", "JWT "+signedToken)
 	// TODO: User-Agent
-
 	return req, nil
 }
 
@@ -95,7 +95,7 @@ func (h HostRequest) AsUser(req *http.Request, accountId string) (*http.Request,
 	if err != nil {
 		return nil, err
 	}
-	h.modifyRequest(req)
+	_, _ = h.modifyRequest(req)
 	req.Header.Set("Authorization", "Bearer "+token)
 	// TODO: User-Agent
 	return req, nil

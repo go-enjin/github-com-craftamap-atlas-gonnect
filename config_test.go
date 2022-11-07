@@ -18,7 +18,6 @@ func TestNewConfig(t *testing.T) {
                 "databaseUrl": "db.sqlite"}}}}`),
 			err: nil,
 			Profile: &Profile{
-				Port:    8080,
 				BaseUrl: "http://test/",
 				Store: StoreConfiguration{
 					Type:        "sqlite3",

@@ -3,7 +3,7 @@ package middleware
 import (
 	"net/http"
 
-	gonnect "github.com/craftamap/atlas-gonnect"
+	"github.com/go-enjin/github-com-craftamap-atlas-gonnect"
 )
 
 type TokenMiddleware struct {

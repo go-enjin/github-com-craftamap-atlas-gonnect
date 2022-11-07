@@ -2,15 +2,16 @@ package middleware
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 
-	gonnect "github.com/craftamap/atlas-gonnect"
-	atlasjwt "github.com/craftamap/atlas-gonnect/atlas-jwt"
-	"github.com/craftamap/atlas-gonnect/util"
+	"github.com/go-enjin/github-com-craftamap-atlas-gonnect"
+	atlasjwt "github.com/go-enjin/github-com-craftamap-atlas-gonnect/atlas-jwt"
+	"github.com/go-enjin/github-com-craftamap-atlas-gonnect/util"
 
 	"github.com/golang-jwt/jwt"
+
+	"github.com/go-enjin/be/pkg/log"
 )
 
 const JWT_PARAM = "jwt"
@@ -31,7 +32,7 @@ func extractUnverifiedClaims(tokenStr string, validator jwt.Keyfunc) (jwt.MapCla
 	if claims, ok := token.Claims.(jwt.MapClaims); ok {
 		return claims, true
 	} else {
-		log.Printf("Invalid JWT Token")
+		log.ErrorF("Invalid JWT Token")
 		return nil, false
 	}
 }
@@ -75,13 +76,13 @@ func ExtractJwt(r *http.Request) (string, bool) {
 }
 
 func (h AuthenticationMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	//TODO: Add better logging here
-	//TODO: Add AC_OPTS no-auth
-	//TODO: Refactor to be more compact
-	//TODO: scoping
+	// TODO: Add better logging here
+	// TODO: Add AC_OPTS no-auth
+	// TODO: Refactor to be more compact
+	// TODO: scoping
 
 	token, ok := ExtractJwt(r)
-	h.addon.Logger.Print(r.URL.String())
+	log.DebugF(r.URL.String())
 	if !ok {
 		util.SendError(w, h.addon, 401, "Could not find auth data on request")
 		return
@@ -101,9 +102,14 @@ func (h AuthenticationMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Reque
 
 	clientKey := unverifiedClaims["iss"].(string)
 
-	if unverifiedClaims["aud"] != nil && unverifiedClaims["aud"] != "" {
-		clientKey = unverifiedClaims["aud"].(string)
-	}
+	// if unverifiedClaims["aud"] != nil && unverifiedClaims["aud"] != "" {
+	// clientKey = unverifiedClaims["aud"].(string)
+	// log.DebugF("using aud as clientKey: %v", unverifiedClaims["aud"])
+	// w.WriteHeader(204)
+	// return
+	// }
+
+	log.DebugF("using clientKey: %v", clientKey)
 
 	queryStringHash := unverifiedClaims["qsh"]
 	if queryStringHash == "" && !h.skipQsh {
@@ -124,16 +130,31 @@ func (h AuthenticationMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Reque
 	}
 
 	verifiedToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
-		// TODO: We should not check the token header for the method instead of using HMAC by default
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			w.WriteHeader(401)
-			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+
+		switch token.Header["alg"] {
+		case "none":
+			return nil, fmt.Errorf("alg is none, discard")
+		case "HS256":
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fmt.Errorf("expected HS256 signing method, actual: %T", token.Method)
+			}
+		case "RS256":
+			// when installing overtop another tenant situation, we're receiving
+			// RS256 when atlas-gonnect is always expecting just HS256, this
+			// problem is alleviated by changes to verify-installation ServeHTTP
+			// where db lookups cause a different installation path
+			if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
+				return nil, fmt.Errorf("expected RS256 signing method, actual: %T", token.Method)
+			}
+		default:
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 
 		return []byte(secret), nil
 	})
 
 	if err != nil {
+		log.ErrorF("JWT Token verification error: %v", err)
 		util.SendError(w, h.addon, 500, "Could not verify JWT Token")
 		return
 	}
@@ -156,7 +177,7 @@ func (h AuthenticationMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	h.addon.Logger.Info("Auth successful")
+	log.DebugF("Auth successful")
 
 	createSessionToken := func() (string, error) {
 		verClaims := verifiedToken.Claims.(jwt.MapClaims)
@@ -209,6 +230,7 @@ func (h AuthenticationMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Reque
 		"token":       tokenString,
 		// TODO: We may have to add the context workaround instead of just using sub as userAccountId, but lets ignore it for now
 		"userAccountId": accountID,
+		"jsonContext":   tenant.Context.String(),
 	}
 
 	requestHandler := NewRequestMiddleware(h.addon, verifiedParams)

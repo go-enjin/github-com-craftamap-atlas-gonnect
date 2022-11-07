@@ -1,13 +1,14 @@
 package middleware
 
 import (
+	"context"
 	"net/http"
 	"net/url"
 
-	"context"
+	"github.com/go-enjin/be/pkg/log"
 
-	gonnect "github.com/craftamap/atlas-gonnect"
-	"github.com/craftamap/atlas-gonnect/hostrequest"
+	"github.com/go-enjin/github-com-craftamap-atlas-gonnect"
+	"github.com/go-enjin/github-com-craftamap-atlas-gonnect/hostrequest"
 )
 
 type RequestMiddleware struct {
@@ -37,7 +38,6 @@ func (h RequestMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		} else {
 			return ""
 		}
-
 	}
 
 	getHostResourceUrl := func(isDev bool, baseUrl string, ext string) *url.URL {
@@ -57,9 +57,7 @@ func (h RequestMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	h.addon.Logger.Debug("Setting Context Variables in Request Middleware")
-	// TODO: Better Logging in this middleware
-	// TODO: context does not like using string as a key - we should do this
+	log.DebugF("Setting Context Variables in Request Middleware")
 	ctx := context.WithValue(r.Context(), "title", *h.addon.Name)
 	ctx = context.WithValue(ctx, "addonKey", *h.addon.Key)
 	ctx = context.WithValue(ctx, "localBaseUrl", h.addon.Config.BaseUrl)
@@ -67,18 +65,26 @@ func (h RequestMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// if missing here: if isJira || isConfluence
 	// Since this poc is for confluence only, this should be valid, for now
-	ctx = context.WithValue(ctx, "hostBaseUrl", getHostBaseUrlFromQueryParams())
+	hostBaseUrl := getHostBaseUrlFromQueryParams()
+	ctx = context.WithValue(ctx, "hostBaseUrl", hostBaseUrl)
 
 	if len(h.verifiedParams) > 0 {
 		ctx = context.WithValue(ctx, "userAccountId", h.verifiedParams["userAccountId"])
 		ctx = context.WithValue(ctx, "clientKey", h.verifiedParams["clientKey"])
 		ctx = context.WithValue(ctx, "hostBaseUrl", h.verifiedParams["hostBaseUrl"])
 		ctx = context.WithValue(ctx, "token", h.verifiedParams["token"])
+		ctx = context.WithValue(ctx, "tenantContext", h.verifiedParams["tenantContext"])
 
 		ctx = context.WithValue(ctx, "httpClient", &hostrequest.HostRequest{Addon: h.addon, ClientKey: h.verifiedParams["clientKey"]})
+	} else {
+		if tenant, err := h.addon.Store.GetByUrl(hostBaseUrl); err != nil {
+			log.ErrorF("error getting tenant %v: %v", hostBaseUrl, err)
+		} else {
+			ctx = context.WithValue(ctx, "tenantContext", tenant.Context.String())
+		}
 	}
 
-	ctx = context.WithValue(ctx, "hostUrl", getHostBaseUrlFromQueryParams())
+	ctx = context.WithValue(ctx, "hostUrl", hostBaseUrl)
 	ctx = context.WithValue(ctx, "hostStylesheetUrl",
 		// TODO: if dev...
 		getHostResourceUrl(true, ctx.Value("hostBaseUrl").(string), "css"))

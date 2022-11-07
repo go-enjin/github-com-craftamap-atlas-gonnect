@@ -3,25 +3,16 @@ package routes
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 
-	gonnect "github.com/craftamap/atlas-gonnect"
-	"github.com/craftamap/atlas-gonnect/middleware"
-	"github.com/craftamap/atlas-gonnect/store"
-	"github.com/craftamap/atlas-gonnect/util"
-	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
+	"github.com/go-chi/chi/v5"
+
+	"github.com/go-enjin/github-com-craftamap-atlas-gonnect"
+	"github.com/go-enjin/github-com-craftamap-atlas-gonnect/middleware"
+	"github.com/go-enjin/github-com-craftamap-atlas-gonnect/store"
+	"github.com/go-enjin/github-com-craftamap-atlas-gonnect/util"
+	"github.com/go-enjin/be/pkg/log"
 )
-
-type RootHandler struct {
-}
-
-func (h RootHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "/atlassian-connect.json", http.StatusPermanentRedirect)
-}
-
-func NewRootHandler() http.Handler {
-	return RootHandler{}
-}
 
 type AtlassianConnectHandler struct {
 	Addon *gonnect.Addon
@@ -29,7 +20,7 @@ type AtlassianConnectHandler struct {
 
 func (h AtlassianConnectHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(h.Addon.AddonDescriptor)
+	_ = json.NewEncoder(w).Encode(h.Addon.AddonDescriptor)
 }
 
 func NewAtlassianConnectHandler(addon *gonnect.Addon) http.Handler {
@@ -51,9 +42,8 @@ func (h InstalledHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		util.SendError(w, h.Addon, 500, err.Error())
 		return
 	}
-	h.Addon.Logger.Infof("installed new tenant %s\n", tenant.BaseURL)
-	//TODO: Figure out what to response - like with my girlfriend <3
-	w.Write([]byte("OK"))
+	log.InfoF("installed new tenant %s\n", tenant.BaseURL)
+	_, _ = w.Write([]byte("OK"))
 }
 
 func NewInstalledHandler(addon *gonnect.Addon) http.Handler {
@@ -75,22 +65,25 @@ func (h UninstalledHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		util.SendError(w, h.Addon, 500, err.Error())
 		return
 	}
-	h.Addon.Logger.Infof("uninstalled tenant %s\n", tenant.BaseURL)
-	//TODO: Figure out what to response
-	w.Write([]byte("OK"))
+	log.InfoF("uninstalled tenant %s\n", tenant.BaseURL)
+	_, _ = w.Write([]byte("OK"))
 }
 
 func NewUninstalledHandler(addon *gonnect.Addon) http.Handler {
 	return UninstalledHandler{addon}
 }
 
-func RegisterRoutes(addon *gonnect.Addon, mux *mux.Router) {
-	mux.Handle("/", NewRootHandler())
-	mux.Handle("/atlassian-connect.json", NewAtlassianConnectHandler(addon))
-	mux.Handle("/installed", handlers.MethodHandler{
-		"POST": middleware.NewVerifyInstallationMiddleware(addon)(NewInstalledHandler(addon)),
-	})
-	mux.Handle("/uninstalled", handlers.MethodHandler{
-		"POST": middleware.NewAuthenticationMiddleware(addon, false)(NewUninstalledHandler(addon)),
-	})
+var RegisteredRoutes []string
+
+func RegisterRoutes(base string, addon *gonnect.Addon, mux chi.Router) {
+	base = strings.Trim(base, " \t/")
+	if base == "" {
+		base = "/"
+	} else {
+		base = "/" + base + "/"
+	}
+	RegisteredRoutes = append(RegisteredRoutes, base+"atlassian-connect.json", base+"installed", base+"uninstalled")
+	mux.Handle(base+"atlassian-connect.json", NewAtlassianConnectHandler(addon))
+	mux.Handle(base+"installed", middleware.NewVerifyInstallationMiddleware(addon)(NewInstalledHandler(addon)))
+	mux.Handle(base+"uninstalled", middleware.NewAuthenticationMiddleware(addon, false)(NewUninstalledHandler(addon)))
 }

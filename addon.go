@@ -3,32 +3,14 @@ package gonnect
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
-	"path"
-	"runtime"
 	"text/template"
 
-	"github.com/craftamap/atlas-gonnect/store"
-	"github.com/sirupsen/logrus"
+	"github.com/go-enjin/be/pkg/log"
+	"github.com/go-enjin/github-com-craftamap-atlas-gonnect/store"
 )
-
-var LOG = logrus.New()
-
-func init() {
-	// TODO: We should propably give the programmers more control about the logging
-	// How?
-	LOG.SetReportCaller(true)
-	LOG.SetFormatter(&logrus.TextFormatter{
-		FullTimestamp: true,
-		CallerPrettyfier: func(f *runtime.Frame) (string, string) {
-			filename := path.Base(f.File)
-			return fmt.Sprintf("%s()", f.Function), fmt.Sprintf("%s:%d", filename, f.Line)
-		},
-	})
-}
 
 type Addon struct {
 	Config          *Profile
@@ -37,7 +19,6 @@ type Addon struct {
 	AddonDescriptor map[string]interface{}
 	Key             *string
 	Name            *string
-	Logger          *logrus.Logger
 }
 
 func readAddonDescriptor(descriptorReader io.Reader, baseUrl string) (map[string]interface{}, error) {
@@ -72,49 +53,32 @@ func readAddonDescriptor(descriptorReader io.Reader, baseUrl string) (map[string
 	return descriptor, nil
 }
 
-func NewAddon(configFile io.Reader, descriptorFile io.Reader) (*Addon, error) {
-	LOG.Info("Initializing new Addon")
+func NewCustomAddon(config *Profile, currentProfile string, addonDescriptor map[string]interface{}, s *store.Store) (a *Addon, err error) {
+	log.InfoF("Initializing new Addon with profile: %v", currentProfile)
+	log.DebugF("Using Addon Profile: %v", config)
+	log.DebugF("Using Addon descriptor: %v", addonDescriptor)
 
-	LOG.Debug("Create new config object")
-	config, currentProfile, err := NewConfig(configFile)
-	if err != nil {
-		LOG.Errorf("Could not create new config object: %s\n", err)
-		return nil, err
+	var ok bool
+	var name, key string
+	if name, ok = addonDescriptor["name"].(string); !ok {
+		err = fmt.Errorf("name could not be read from AddonDescriptor")
+		return
 	}
 
-	LOG.Debug("Creating new store")
-	store, err := store.New(config.Store.Type, config.Store.DatabaseUrl)
-	if err != nil {
-		LOG.Errorf("Could not create new store: %s\n", err)
-		return nil, err
-	}
-	LOG.Debug("Reading AddonDescriptor")
-	addonDescriptor, err := readAddonDescriptor(descriptorFile, config.BaseUrl)
-	if err != nil {
-		LOG.Errorf("Could not read AddonDescriptor: %s\n", err)
-		return nil, err
+	if key, ok = addonDescriptor["key"].(string); !ok {
+		err = fmt.Errorf("key could not be read from AddonDescriptor")
+		return
 	}
 
-	name, ok := addonDescriptor["name"].(string)
-	if !ok {
-		return nil, errors.New("name could not be read from AddonDescriptor")
-	}
-
-	key, ok := addonDescriptor["key"].(string)
-	if !ok {
-		return nil, errors.New("key could not be read from AddonDescriptor")
-	}
-
-	addon := &Addon{
+	a = &Addon{
 		Config:          config,
-		Store:           store,
-		Logger:          LOG,
+		Store:           s,
 		CurrentProfile:  currentProfile,
 		AddonDescriptor: addonDescriptor,
 		Name:            &name,
 		Key:             &key,
 	}
 
-	LOG.Info("Addon successfully initialized!")
-	return addon, nil
+	log.DebugF("addon successfully initialized")
+	return
 }

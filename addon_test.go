@@ -7,14 +7,16 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/craftamap/atlas-gonnect/store"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"github.com/jinzhu/gorm"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+
+	"github.com/go-enjin/github-com-craftamap-atlas-gonnect/store"
 )
 
 func TestNewAddon(t *testing.T) {
-	memoryGorm1, err := gorm.Open("sqlite3", ":memory:")
+	memoryGorm1, err := gorm.Open(sqlite.Open(":memory:"))
 	if err != nil {
 		t.Error(err)
 	}
@@ -77,7 +79,6 @@ func TestNewAddon(t *testing.T) {
 				CurrentProfile: "dev",
 				Store:          &store.Store{Database: memoryGorm1},
 				Config: &Profile{
-					Port:    8080,
 					BaseUrl: "http://test/",
 					Store: StoreConfiguration{
 						Type:        "sqlite3",
