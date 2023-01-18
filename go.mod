@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/go-chi/chi/v5 v5.0.7
-	github.com/go-enjin/be v0.0.0-20221106213152-7661cba02d30
+	github.com/go-enjin/be v0.0.0-20230118230311-511871189c00
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/go-cmp v0.5.9
 	github.com/patrickmn/go-cache v2.1.0+incompatible
@@ -32,6 +32,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.15 // indirect
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect
 	github.com/onsi/ginkgo v1.16.5 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/polds/logrus-papertrail-hook v0.0.0-20180214143432-bcfe7b72c1a4 // indirect
 	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2 // indirect
