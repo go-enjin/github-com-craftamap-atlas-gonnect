@@ -19,7 +19,7 @@
 
 SHELL = /bin/bash
 
-BE_PATH ?= ../../../be
+BE_PATH ?= ../be
 
 BUILD_TAGS =
 EXTRA_PKGS =
