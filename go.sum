@@ -20,8 +20,8 @@ github.com/fsnotify/fsnotify v1.4.9 h1:hsms1Qyu0jgnwNXIxa+/V/PDsU6CfLf6CNO8H7IWo
 github.com/fsnotify/fsnotify v1.4.9/go.mod h1:znqG4EE+3YCdAaPaxE2ZRY/06pZUdp0tY4IgpuI1SZQ=
 github.com/go-chi/chi/v5 v5.0.7 h1:rDTPXLDHGATaeHvVlLcR4Qe0zftYethFucbjVQ1PxU8=
 github.com/go-chi/chi/v5 v5.0.7/go.mod h1:DslCQbL2OYiznFReuXYUmQ2hGd1aDpCnlMNITLSKoi8=
-github.com/go-enjin/be v0.0.0-20230118230311-511871189c00 h1:/6A6ElQRtY6Gvba/HvSc8rRtVJr9qFy+rsrBnPDtjuM=
-github.com/go-enjin/be v0.0.0-20230118230311-511871189c00/go.mod h1:P+Iar2mcbOm5GFtuEJksbU3glJC+sVK9xaa9tbLZhzc=
+github.com/go-enjin/be v0.0.0-20230201225739-91c0f9f2756f h1:jDX4WV8R3xTkAwOsSROCYptdjibVL+BbGdGlhgqjn3M=
+github.com/go-enjin/be v0.0.0-20230201225739-91c0f9f2756f/go.mod h1:dXKwqlc9/9umH3dwf6/6H2liTzfXtt3hMnhMwNg9+GQ=
 github.com/go-kit/log v0.1.0/go.mod h1:zbhenjAZHb184qTLMA9ZjW7ThYL0H2mk7Q6pNt4vbaY=
 github.com/go-logfmt/logfmt v0.5.0/go.mod h1:wCYkCAKZfumFQihp8CzCvQ3paCTfi41vtzG1KdI/P7A=
 github.com/go-sql-driver/mysql v1.6.0 h1:BCTh4TKNUYmOmMUcQ3IipzF5prigylS7XXjEkfCHuOE=

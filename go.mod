@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/go-chi/chi/v5 v5.0.7
-	github.com/go-enjin/be v0.0.0-20230118230311-511871189c00
+	github.com/go-enjin/be v0.0.0-20230201225739-91c0f9f2756f
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/go-cmp v0.5.9
 	github.com/patrickmn/go-cache v2.1.0+incompatible
