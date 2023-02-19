@@ -1,10 +1,10 @@
 module github.com/go-enjin/github-com-craftamap-atlas-gonnect
 
-go 1.18
+go 1.19
 
 require (
 	github.com/go-chi/chi/v5 v5.0.8
-	github.com/go-enjin/be v0.0.0-20230202203032-d6578a153b4c
+	github.com/go-enjin/be v0.0.0-20230219164336-a489df8dbf44
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/go-cmp v0.5.9
 	github.com/patrickmn/go-cache v2.1.0+incompatible
@@ -31,7 +31,7 @@ require (
 	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2 // indirect
 	golang.org/x/crypto v0.4.0 // indirect
-	golang.org/x/sys v0.3.0 // indirect
-	golang.org/x/term v0.3.0 // indirect
-	golang.org/x/text v0.5.0 // indirect
+	golang.org/x/sys v0.5.0 // indirect
+	golang.org/x/term v0.5.0 // indirect
+	golang.org/x/text v0.7.0 // indirect
 )
