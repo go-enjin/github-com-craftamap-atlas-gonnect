@@ -1,10 +1,10 @@
 module github.com/go-enjin/github-com-craftamap-atlas-gonnect
 
-go 1.19
+go 1.20
 
 require (
 	github.com/go-chi/chi/v5 v5.0.8
-	github.com/go-enjin/be v0.0.0-20230219182730-fdabda8c29d2
+	github.com/go-enjin/be v0.0.0-20230306185847-fc7be4685066
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/go-cmp v0.5.9
 	github.com/patrickmn/go-cache v2.1.0+incompatible

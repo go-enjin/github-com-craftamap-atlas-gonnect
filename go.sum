@@ -7,8 +7,8 @@ github.com/fsnotify/fsnotify v1.4.9 h1:hsms1Qyu0jgnwNXIxa+/V/PDsU6CfLf6CNO8H7IWo
 github.com/fsnotify/fsnotify v1.4.9/go.mod h1:znqG4EE+3YCdAaPaxE2ZRY/06pZUdp0tY4IgpuI1SZQ=
 github.com/go-chi/chi/v5 v5.0.8 h1:lD+NLqFcAi1ovnVZpsnObHGW4xb4J8lNmoYVfECH1Y0=
 github.com/go-chi/chi/v5 v5.0.8/go.mod h1:DslCQbL2OYiznFReuXYUmQ2hGd1aDpCnlMNITLSKoi8=
-github.com/go-enjin/be v0.0.0-20230219182730-fdabda8c29d2 h1:wm61Ce/iJxORE5Cs4g+dCF6VkAWw37bNIVT4+w6zJ9E=
-github.com/go-enjin/be v0.0.0-20230219182730-fdabda8c29d2/go.mod h1:ci3DS3GEWJaazZ4SnshK5E52SbQywN1aeNbhJrlAHY0=
+github.com/go-enjin/be v0.0.0-20230306185847-fc7be4685066 h1:Zdy7ergotcF429EIMEIOyspuOeSY1QMJRZNLtjeE3Nk=
+github.com/go-enjin/be v0.0.0-20230306185847-fc7be4685066/go.mod h1:FA66JRxRXScBbvuDbImHMf2xlSSRv1JzCUmTw1KO8n8=
 github.com/go-sql-driver/mysql v1.7.0 h1:ueSltNNllEqE3qcWBTD0iQd3IpL/6U+mJxLkazJ7YPc=
 github.com/go-sql-driver/mysql v1.7.0/go.mod h1:OXbVy3sEdcQ2Doequ6Z5BW6fXNQTmx+9S1MCJN5yJMI=
 github.com/go-task/slim-sprig v0.0.0-20210107165309-348f09dbbbc0/go.mod h1:fyg7847qk6SyHyPtNmDHnmrv/HOrqktSC+C9fM+CJOE=
