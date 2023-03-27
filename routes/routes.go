@@ -76,7 +76,7 @@ func NewUninstalledHandler(addon *gonnect.Addon) http.Handler {
 
 var RegisteredRoutes []string
 
-func RegisterRoutes(base string, addon *gonnect.Addon, mux chi.Router) {
+func RegisterRoutes(base string, addon *gonnect.Addon, mux chi.Router, enabled, disabled http.Handler) {
 	base = strings.Trim(base, " \t/")
 	if base == "" {
 		base = "/"
@@ -87,4 +87,10 @@ func RegisterRoutes(base string, addon *gonnect.Addon, mux chi.Router) {
 	mux.Handle(base+"atlassian-connect.json", NewAtlassianConnectHandler(addon))
 	mux.Handle(base+"installed", middleware.NewVerifyInstallationMiddleware(addon)(NewInstalledHandler(addon)))
 	mux.Handle(base+"uninstalled", middleware.NewAuthenticationMiddleware(addon, false)(NewUninstalledHandler(addon)))
+	if enabled != nil {
+		mux.Handle(base+"enabled", middleware.NewAuthenticationMiddleware(addon, false)(enabled))
+	}
+	if disabled != nil {
+		mux.Handle(base+"disabled", middleware.NewAuthenticationMiddleware(addon, false)(disabled))
+	}
 }
