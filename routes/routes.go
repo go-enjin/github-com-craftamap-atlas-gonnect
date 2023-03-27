@@ -7,11 +7,12 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
+	"github.com/go-enjin/be/pkg/log"
+
 	"github.com/go-enjin/github-com-craftamap-atlas-gonnect"
 	"github.com/go-enjin/github-com-craftamap-atlas-gonnect/middleware"
 	"github.com/go-enjin/github-com-craftamap-atlas-gonnect/store"
 	"github.com/go-enjin/github-com-craftamap-atlas-gonnect/util"
-	"github.com/go-enjin/be/pkg/log"
 )
 
 type AtlassianConnectHandler struct {
@@ -42,7 +43,7 @@ func (h InstalledHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		util.SendError(w, h.Addon, 500, err.Error())
 		return
 	}
-	log.InfoF("installed new tenant %s\n", tenant.BaseURL)
+	log.InfoF("installed new tenant %s", tenant.BaseURL)
 	_, _ = w.Write([]byte("OK"))
 }
 
@@ -65,7 +66,7 @@ func (h UninstalledHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		util.SendError(w, h.Addon, 500, err.Error())
 		return
 	}
-	log.InfoF("uninstalled tenant %s\n", tenant.BaseURL)
+	log.InfoF("uninstalled tenant %s", tenant.BaseURL)
 	_, _ = w.Write([]byte("OK"))
 }
 
