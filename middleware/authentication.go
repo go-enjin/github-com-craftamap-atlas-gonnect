@@ -230,7 +230,7 @@ func (h AuthenticationMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Reque
 		"token":       tokenString,
 		// TODO: We may have to add the context workaround instead of just using sub as userAccountId, but lets ignore it for now
 		"userAccountId": accountID,
-		"jsonContext":   tenant.Context.String(),
+		"tenantContext": tenant.Context.String(),
 	}
 
 	requestHandler := NewRequestMiddleware(h.addon, verifiedParams)
