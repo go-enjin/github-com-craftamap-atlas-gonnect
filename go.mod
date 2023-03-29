@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/go-chi/chi/v5 v5.0.8
-	github.com/go-enjin/be v0.0.0-20230320204704-f3f333993b18
+	github.com/go-enjin/be v0.0.0-20230329213325-0f826026eb3c
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/go-cmp v0.5.9
 	github.com/patrickmn/go-cache v2.1.0+incompatible
