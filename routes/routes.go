@@ -81,16 +81,18 @@ func RegisterRoutes(base string, addon *gonnect.Addon, mux chi.Router, enabled, 
 	if base == "" {
 		base = "/"
 	} else {
-		base = "/" + base + "/"
+		base = "/" + base
 	}
 	RegisteredRoutes = append(RegisteredRoutes, base+"atlassian-connect.json", base+"installed", base+"uninstalled")
-	mux.Handle(base+"atlassian-connect.json", NewAtlassianConnectHandler(addon))
-	mux.Handle(base+"installed", middleware.NewVerifyInstallationMiddleware(addon)(NewInstalledHandler(addon)))
-	mux.Handle(base+"uninstalled", middleware.NewAuthenticationMiddleware(addon, false)(NewUninstalledHandler(addon)))
-	if enabled != nil {
-		mux.Handle(base+"enabled", middleware.NewAuthenticationMiddleware(addon, false)(enabled))
-	}
-	if disabled != nil {
-		mux.Handle(base+"disabled", middleware.NewAuthenticationMiddleware(addon, false)(disabled))
-	}
+	mux.Route(base, func(r chi.Router) {
+		r.Handle("/atlassian-connect.json", NewAtlassianConnectHandler(addon))
+		r.Handle("/installed", middleware.NewVerifyInstallationMiddleware(addon)(NewInstalledHandler(addon)))
+		r.Handle("/uninstalled", middleware.NewAuthenticationMiddleware(addon, false)(NewUninstalledHandler(addon)))
+		if enabled != nil {
+			r.Handle("/enabled", middleware.NewAuthenticationMiddleware(addon, false)(enabled))
+		}
+		if disabled != nil {
+			r.Handle("/disabled", middleware.NewAuthenticationMiddleware(addon, false)(disabled))
+		}
+	})
 }
