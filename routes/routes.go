@@ -35,12 +35,12 @@ type InstalledHandler struct {
 func (h InstalledHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	tenant, err := store.NewTenantFromReader(r.Body)
 	if err != nil {
-		util.SendError(w, h.Addon, 500, err.Error())
+		util.SendError(w, r, h.Addon, 500, err.Error())
 		return
 	}
 	_, err = h.Addon.Store.Set(tenant)
 	if err != nil {
-		util.SendError(w, h.Addon, 500, err.Error())
+		util.SendError(w, r, h.Addon, 500, err.Error())
 		return
 	}
 	log.InfoF("installed new tenant %s", tenant.BaseURL)
@@ -58,12 +58,12 @@ type UninstalledHandler struct {
 func (h UninstalledHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	tenant, err := store.NewTenantFromReader(r.Body)
 	if err != nil {
-		util.SendError(w, h.Addon, 500, err.Error())
+		util.SendError(w, r, h.Addon, 500, err.Error())
 		return
 	}
 	_, err = h.Addon.Store.Set(tenant)
 	if err != nil {
-		util.SendError(w, h.Addon, 500, err.Error())
+		util.SendError(w, r, h.Addon, 500, err.Error())
 		return
 	}
 	log.InfoF("uninstalled tenant %s", tenant.BaseURL)

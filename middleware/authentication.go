@@ -84,19 +84,19 @@ func (h AuthenticationMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Reque
 	token, ok := ExtractJwt(r)
 	log.DebugF(r.URL.String())
 	if !ok {
-		util.SendError(w, h.addon, 401, "Could not find auth data on request")
+		util.SendError(w, r, h.addon, 401, "Could not find auth data on request")
 		return
 	}
 
 	unverifiedClaims, ok := extractUnverifiedClaims(token, nil)
 
 	if !ok {
-		util.SendError(w, h.addon, 401, "JWT claim did not contain the issuer (iss) claim")
+		util.SendError(w, r, h.addon, 401, "JWT claim did not contain the issuer (iss) claim")
 		return
 	}
 
 	if unverifiedClaims["iss"] == "" {
-		util.SendError(w, h.addon, 401, "JWT claim did not contain the issuer (iss) claim")
+		util.SendError(w, r, h.addon, 401, "JWT claim did not contain the issuer (iss) claim")
 		return
 	}
 
@@ -113,19 +113,19 @@ func (h AuthenticationMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Reque
 
 	queryStringHash := unverifiedClaims["qsh"]
 	if queryStringHash == "" && !h.skipQsh {
-		util.SendError(w, h.addon, 401, "JWT claim did not contain the query string hash (qsh) claim")
+		util.SendError(w, r, h.addon, 401, "JWT claim did not contain the query string hash (qsh) claim")
 	}
 
 	tenant, err := h.addon.Store.Get(clientKey)
 
 	if err != nil {
-		util.SendError(w, h.addon, 500, "Could not lookup stored client data for clientKey")
+		util.SendError(w, r, h.addon, 500, "Could not lookup stored client data for clientKey")
 		return
 	}
 
 	secret := tenant.SharedSecret
 	if secret == "" {
-		util.SendError(w, h.addon, 401, "Could not find JQT sharedSecret in tenant clientKey")
+		util.SendError(w, r, h.addon, 401, "Could not find JQT sharedSecret in tenant clientKey")
 		return
 	}
 
@@ -155,25 +155,25 @@ func (h AuthenticationMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Reque
 
 	if err != nil {
 		log.ErrorF("JWT Token verification error: %v", err)
-		util.SendError(w, h.addon, 500, "Could not verify JWT Token")
+		util.SendError(w, r, h.addon, 500, "Could not verify JWT Token")
 		return
 	}
 
 	err = verifiedToken.Claims.Valid()
 	if err != nil {
-		util.SendError(w, h.addon, 500, "Could not find verify JWT Claims; Auth request has expired")
+		util.SendError(w, r, h.addon, 500, "Could not find verify JWT Claims; Auth request has expired")
 		return
 	}
 
 	claims, ok := verifiedToken.Claims.(jwt.MapClaims)
 	if !ok {
-		util.SendError(w, h.addon, 500, "Could not cast Claims")
+		util.SendError(w, r, h.addon, 500, "Could not cast Claims")
 		return
 	}
 
 	ok = ValidateQshFromRequest(claims, r, h.addon, h.skipQsh)
 	if !ok {
-		util.SendError(w, h.addon, 401, "Auth failure: Query hash mismatch")
+		util.SendError(w, r, h.addon, 401, "Auth failure: Query hash mismatch")
 		return
 	}
 
@@ -207,7 +207,7 @@ func (h AuthenticationMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Reque
 
 	tokenString, err := createSessionToken()
 	if err != nil {
-		util.SendError(w, h.addon, 500, fmt.Sprintf("Could not create new access token %s", err))
+		util.SendError(w, r, h.addon, 500, fmt.Sprintf("Could not create new access token %s", err))
 		return
 	}
 
@@ -215,7 +215,7 @@ func (h AuthenticationMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Reque
 
 	tenant, err = h.addon.Store.Get(clientKey)
 	if err != nil {
-		util.SendError(w, h.addon, 500, fmt.Sprintf("Could not create new access token %s", err))
+		util.SendError(w, r, h.addon, 500, fmt.Sprintf("Could not create new access token %s", err))
 		return
 	}
 

@@ -118,7 +118,7 @@ type signedInstallMiddleware struct {
 func (h signedInstallMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	clientKey, err := h.verifyAsymmetricJwtAndGetClaims(r)
 	if err != nil {
-		util.SendError(w, h.addon, 401, err.Error())
+		util.SendError(w, r, h.addon, 401, err.Error())
 		return
 	}
 
@@ -177,7 +177,7 @@ type VerifyInstallationMiddleware struct {
 
 func (h VerifyInstallationMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Body == http.NoBody {
-		util.SendError(w, h.addon, 401, "No registration info provided")
+		util.SendError(w, r, h.addon, 401, "No registration info provided")
 		return
 	}
 
@@ -194,7 +194,7 @@ func (h VerifyInstallationMiddleware) ServeHTTP(w http.ResponseWriter, r *http.R
 
 	baseUrl, ok := responseData["baseUrl"]
 	if !ok {
-		util.SendError(w, h.addon, 401, "No baseUrl provided for registration info")
+		util.SendError(w, r, h.addon, 401, "No baseUrl provided for registration info")
 		return
 	}
 
@@ -212,7 +212,7 @@ func (h VerifyInstallationMiddleware) ServeHTTP(w http.ResponseWriter, r *http.R
 				if r.Context().Value("clientKey") == clientKey {
 					h.next.ServeHTTP(w, r)
 				} else {
-					util.SendError(w, h.addon, 401, "clientKey in install payload did not match authenticated client")
+					util.SendError(w, r, h.addon, 401, "clientKey in install payload did not match authenticated client")
 					return
 				}
 			}),
