@@ -17,7 +17,7 @@ type Store struct {
 }
 
 func New(dbType string, databaseUrl string) (store *Store, err error) {
-	log.DebugF("Initializing Database Connection")
+	log.TraceF("Initializing Database Connection")
 	var dialect gorm.Dialector
 	switch dbType {
 	case "postgres":
@@ -47,11 +47,11 @@ func NewTableFrom(table string, db *gorm.DB) (store *Store, err error) {
 		table:    table,
 		Database: db,
 	}
-	log.DebugF("Migrating Database Schemas")
+	log.TraceF("Migrating Database Schemas")
 	if err = store.Tx().AutoMigrate(&Tenant{}); err != nil {
 		return
 	}
-	log.DebugF("Database Connection initialized")
+	log.TraceF("Database Connection initialized")
 	return
 }
 
@@ -76,21 +76,21 @@ func (s *Store) Tx() (tx *gorm.DB) {
 
 func (s *Store) Get(clientKey string) (*Tenant, error) {
 	tenant := Tenant{}
-	log.DebugF("Tenant with clientKey %s requested from database", clientKey)
+	log.TraceF("Tenant with clientKey %s requested from database", clientKey)
 	if result := s.Tx().Where(&Tenant{ClientKey: clientKey}).First(&tenant); result.Error != nil {
 		return nil, result.Error
 	}
-	log.DebugF("Got Tenant from Database: %+v", tenant)
+	log.TraceF("Got Tenant from Database: %+v", tenant)
 	return &tenant, nil
 }
 
 func (s *Store) GetByUrl(url string) (*Tenant, error) {
 	tenant := Tenant{}
-	log.DebugF("Tenant with clientKey %s requested from database", url)
+	log.TraceF("Tenant with clientKey %s requested from database", url)
 	if result := s.Tx().Where(&Tenant{BaseURL: url}).First(&tenant); result.Error != nil {
 		return nil, result.Error
 	}
-	log.DebugF("Got Tenant from Database: %+v", tenant)
+	log.TraceF("Got Tenant from Database: %+v", tenant)
 	return &tenant, nil
 }
 
@@ -112,7 +112,7 @@ func (s *Store) Set(tenant *Tenant) (*Tenant, error) {
 		}
 	}
 
-	log.DebugF("Tenant %+v successfully inserted or updated", tenant)
+	log.TraceF("Tenant %+v successfully inserted or updated", tenant)
 	return tenant, nil
 }
 
@@ -121,6 +121,6 @@ func (s *Store) Delete(clientKey string) (err error) {
 	if result := s.Tx().Where(&Tenant{ClientKey: clientKey}).First(&tenant); result.Error != nil {
 		return result.Error
 	}
-	log.DebugF("deleting tenant with clientKey %s from database", clientKey)
+	log.WarnF("deleting tenant with clientKey %s from database", clientKey)
 	return s.Tx().Delete(&tenant).Error
 }
