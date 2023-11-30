@@ -57,7 +57,7 @@ func (h RequestMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	log.DebugF("Setting Context Variables in Request Middleware")
+	log.TraceF("Setting Context Variables in Request Middleware")
 	ctx := context.WithValue(r.Context(), "title", *h.addon.Name)
 	ctx = context.WithValue(ctx, "addonKey", *h.addon.Key)
 	ctx = context.WithValue(ctx, "localBaseUrl", h.addon.Config.BaseUrl)
