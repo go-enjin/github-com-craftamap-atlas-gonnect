@@ -8,8 +8,8 @@ github.com/fsnotify/fsnotify v1.4.9 h1:hsms1Qyu0jgnwNXIxa+/V/PDsU6CfLf6CNO8H7IWo
 github.com/fsnotify/fsnotify v1.4.9/go.mod h1:znqG4EE+3YCdAaPaxE2ZRY/06pZUdp0tY4IgpuI1SZQ=
 github.com/go-chi/chi/v5 v5.0.10 h1:rLz5avzKpjqxrYwXNfmjkrYYXOyLJd37pz53UFHC6vk=
 github.com/go-chi/chi/v5 v5.0.10/go.mod h1:DslCQbL2OYiznFReuXYUmQ2hGd1aDpCnlMNITLSKoi8=
-github.com/go-enjin/be v0.5.3 h1:Hx5exqdZ8ZQhV7hLaZULP3bSMga79vPXaoCedT1O2yQ=
-github.com/go-enjin/be v0.5.3/go.mod h1:Kf5AF6opr/HknPmiX2omDDxAtorFelFPgVsEuIwSL/o=
+github.com/go-enjin/be v0.5.4 h1:Ng1Bn7ZgK1HcnGFEy3q7s5a+VKH2JG8oh44AqMef50E=
+github.com/go-enjin/be v0.5.4/go.mod h1:Q3tshvijOsJL892JxpwmK0PbmhY+G/T16jWdjIco1l8=
 github.com/go-enjin/github-com-djherbis-times v0.0.0-20221101184323-aeef8854ee8a h1:Qr7FpRTxEBnNJtyYj6TyVPs12bn45xSLFkygcSby1g4=
 github.com/go-enjin/github-com-djherbis-times v0.0.0-20221101184323-aeef8854ee8a/go.mod h1:hId0+St26leJQkTRaFYATZHMGja4wrv0hzf5SwKs3hA=
 github.com/go-sql-driver/mysql v1.7.0 h1:ueSltNNllEqE3qcWBTD0iQd3IpL/6U+mJxLkazJ7YPc=
