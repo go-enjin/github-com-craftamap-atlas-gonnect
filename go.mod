@@ -6,7 +6,7 @@ toolchain go1.21.0
 
 require (
 	github.com/go-chi/chi/v5 v5.0.10
-	github.com/go-enjin/be v0.5.4
+	github.com/go-enjin/be v0.5.5
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/go-cmp v0.6.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
